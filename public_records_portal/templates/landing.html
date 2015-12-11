@@ -13,7 +13,7 @@
 	<div class="span8 offset2">
 		<div class="row-fluid">
 			<div class="span8">
-				<h1 id="landing_brand">RecordTrac</h1>
+				<h1 id="landing_brand">{% trans %}RecordTrac{% endtrans %}</h1>
 				<h3>A better way to find public records.</h3>
 			</div>
 			<div class="span4">
@@ -30,7 +30,7 @@
 						<div class="row-fluid">
 							<a href="/view_requests" class="btn btn-link round_link">
 								<img src="{{ url_for('static', filename='images/explore.png') }}" class="left-image" alt="explore">
-								<h4 class="text-center text-title">EXPLORE</h4>
+								<h4 class="text-center text-title">{% trans %}EXPLORE{% endtrans %}</h4>
 								<p class="span10 offset1 text-center text-body">View <span id="request-count" class="badge badge-info">
 									{% set all_record_requests = "Request" | get_objs %}
 									{{ all_record_requests | count }}</span> past requests and counting.
@@ -42,7 +42,7 @@
 						<div class="row-fluid">
 							<a href="/new" class="btn btn-link round_link">
 								<img src="{{ url_for('static', filename='images/create.png') }}" class="center-image" alt="create">
-								<h4 class="text-center text-title">REQUEST</h4>
+								<h4 class="text-center text-title">{% trans %}REQUEST{% endtrans %}</h4>
 								<p class="span10 offset1 text-center text-body">Create a new public records request.</p>
 							</a>
 						</div>
@@ -51,12 +51,12 @@
 						<div class="row-fluid">
 							<a href="/track" class="btn btn-link round_link">
 								<img src="{{ url_for('static', filename='images/track.png') }}" class="right-image" alt="track">
-								<h4 class="text-center text-title">TRACK</h4>
+								<h4 class="text-center text-title">{% trans %}TRACK{% endtrans %}</h4>
 								<p class="span10 offset1 text-center text-body">Get real-time updates as we process your request.</p>
 							</a>
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 		</div>
@@ -109,5 +109,5 @@
 
 {% block custom_script_links %}
 
-  
+
 {% endblock custom_script_links %}
