@@ -41,7 +41,7 @@ This template provides the header, footer, and envelope info for all pages excep
     <![endif]-->
 
   <!-- transform and other prefixes polyfill -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/css3finalize/4.0.0/jquery.css3finalize.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.css3finalize.min.js') }}"></script>
 
   <!-- REM unit polyfill -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/plugins/rem.min.js') }}"></script>
