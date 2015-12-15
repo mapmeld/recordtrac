@@ -24,7 +24,7 @@ def date_granular(timestamp):
 	if not timestamp:
 		return None
 	if type(timestamp) is not datetime:
-		timestamp = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+		timestamp = datetime.strptime(timestamp, "%d-%m-%YT%H:%M:%S.%f")
 	delta = datetime.now() - timestamp
 	days, hours, minutes, seconds = delta.days, delta.seconds//3600, delta.seconds//60, delta.seconds
 	if days < 1:
@@ -35,15 +35,15 @@ def date_granular(timestamp):
 		elif seconds > 1:
 			return "%s seconds ago" % seconds
 		else:
-			return "Just now."
+			return _("Just now.")
 	elif days == 1:
-		return "A day ago"
+		return _("A day ago")
 	elif days > 1:
 		weeks = days//7
 		if weeks < 1:
 			return "%s days ago" % days
 		if weeks == 1:
-			return "A week ago"
+			return _("A week ago")
 		elif weeks > 1:
 			return "%s weeks ago" % weeks
 
@@ -55,16 +55,16 @@ def date(obj):
 	try:
 		return notifications.format_date(obj)
 	except: # Not a datetime object
- 		return notifications.format_date(datetime.strptime(obj, "%Y-%m-%dT%H:%M:%S.%f"))
+ 		return notifications.format_date(datetime.strptime(obj, "%d-%m-%YT%H:%M:%S.%f"))
 
-def format_datetime(obj, format):
+def format_datetime(obj, format="%d-%m-%Y"):
 	""" Take a datetime or datetime-like object and return a formatted datetime string. """
 	if not obj:
 		return None
 	try:
 		return localize(obj).strftime(format)
 	except: # Not a datetime object
-		date_obj = datetime.strptime(obj, "%Y-%m-%dT%H:%M:%S.%f")
+		date_obj = datetime.strptime(obj, "%d-%m-%YT%H:%M:%S.%f")
 		return localize(date_obj).strftime(format)
 
 def timestamp(obj):
@@ -119,4 +119,3 @@ def display_staff_participant(owner, request):
 		return staff.alias
 	else:
 		return staff.email
-

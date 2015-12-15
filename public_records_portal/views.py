@@ -33,6 +33,7 @@ import re
 from db_helpers import get_count, get_obj
 from sqlalchemy import func, not_, and_, or_
 import pytz
+from flask.ext.babel import gettext as _
 
 # Initialize login
 
@@ -62,15 +63,15 @@ def login(email=None, password=None):
 			return redirect(redirect_url)
 		else:
 			app.logger.info("\n\nLogin failed (due to incorrect e-mail/password combo) for email: %s." % email)
-			return render_template('error.html', message = "That e-mail/ password combo didn't work. You can always <a href='/reset_password'>reset your password</a>.")
+			return render_template('error.html', message = _("That e-mail/password didn't work. You can always <a href='/reset_password'>reset your password</a>."))
 		app.logger.info("\n\nLogin failed for email: %s." % email)
-		return render_template('error.html', message="Something went wrong.", user_id = get_user_id())
+		return render_template('error.html', message=_("Something went wrong."), user_id = get_user_id())
 	else:
 		user_id = get_user_id()
 		if user_id:
-			return render_template('generic.html', message = 'You are already logged in. If you wish to log in as another user, first log out by clicking your name in the upper-right corner of this page and clicking Logout.', user_id = user_id)
+			return render_template('generic.html', message = _('You are already logged in. If you wish to log in as another user, first log out by clicking your name in the upper-right corner of this page and clicking Logout.'), user_id = user_id)
 		else:
-			return render_template('generic.html', message = "If you work for the %s and are trying to log into RecordTrac, please log in by clicking City login in the upper-right corner of this page." % app.config['AGENCY_NAME'])
+			return render_template('generic.html', message = _("If you work for the %s and are trying to log into RecordTrac, please log in by clicking City login in the upper-right corner of this page.") % app.config['AGENCY_NAME'])
 
 @app.route("/reset_password", methods = ["GET", "POST"])
 def reset_password(email=None):
@@ -81,7 +82,7 @@ def reset_password(email=None):
 		email = request.form['email']
 		password = db_helpers.set_random_password(email)
 		if password:
-			send_prr_email(page = app.config['APPLICATION_URL'], recipients = [email], subject = "Your temporary password", template = "password_email.html", include_unsubscribe_link = False, password = password)
+			send_prr_email(page = app.config['APPLICATION_URL'], recipients = [email], subject = _("Your temporary password"), template = "password_email.html", include_unsubscribe_link = False, password = password)
 			reset_success = True
 			app.logger.info("\n\nPassword reset sent for email: %s." % email)
 		else:
@@ -110,7 +111,7 @@ def new_request(passed_recaptcha = False, data = None):
 		email = data['request_email']
 		request_text = data['request_text']
 		if request_text == "":
-			return render_template('error.html', message = "You cannot submit an empty request.")
+			return render_template('error.html', message = _("You cannot submit an empty request."))
 		if email == "" and 'ignore_email' not in data and not passed_recaptcha:
 			return render_template('missing_email.html', form = data)
 		if not passed_recaptcha and (is_spam(comment = request_text, user_ip = request.remote_addr, user_agent = request.headers.get('User-Agent'))):
@@ -135,9 +136,9 @@ def new_request(passed_recaptcha = False, data = None):
 				try:
 					date_received = datetime.strptime(date_received, '%m/%d/%Y')
 				except ValueError:
-					return render_template('error.html', message = "Please use the datepicker to select a date.")
+					return render_template('error.html', message = _("Please use the datepicker to select a date."))
 				if date_received.date() > date.today():
-					return render_template('error.html', message = "Please choose a request receipt date that is no later than today.")
+					return render_template('error.html', message = _("Please choose a request receipt date that is no later than today."))
 
 				tz = pytz.timezone(app.config['TIMEZONE'])
 				offset = tz.utcoffset(datetime.now())
@@ -148,9 +149,9 @@ def new_request(passed_recaptcha = False, data = None):
 		if is_new:
 			return redirect(url_for('show_request_for_x', request_id = request_id, audience = 'new'))
 		if not request_id:
-			return render_template('error.html', message = "Your request looks a lot like spam.")
+			return render_template('error.html', message = _("Your request might be spam."))
 		app.logger.info("\n\nDuplicate request entered: %s" % request_text)
-		return render_template('error.html', message = "Your request is the same as /request/%s" % request_id)
+		return render_template('error.html', message = _("Your request is the same as /request/%s") % request_id)
 	else:
 		departments = None
 		routing_available = False
@@ -220,7 +221,7 @@ def show_request_for_city(request_id):
 def show_response(request_id):
 	req = get_obj("Request", request_id)
 	if not req:
-		return render_template('error.html', message = "A request with ID %s does not exist." % request_id)
+		return render_template('error.html', message = _("A request with ID %s does not exist.") % request_id)
 	return render_template("response.html", req = req)
 
 @app.route("/track", methods = ["POST"])
@@ -246,13 +247,13 @@ def unfollow(request_id, email):
 	if success:
 		return show_request(request_id = request_id, template = "manage_request_unfollow.html")
 	else:
-		return render_template('error.html', message = "Unfollowing this request was unsuccessful. You probably weren't following it to begin with.")
+		return render_template('error.html', message = _("Unfollowing this request was unsuccessful. You probably weren't following it."))
 
 @app.route("/request/<int:request_id>")
 def show_request(request_id, template = "manage_request_public.html"):
 	req = get_obj("Request", request_id)
 	if not req:
-		return render_template('error.html', message = "A request with ID %s does not exist." % request_id)
+		return render_template('error.html', message = _("A request with ID %s does not exist.") % request_id)
 	if req.status and "Closed" in req.status and template != "manage_request_feedback.html":
 		template = "closed.html"
 	return render_template(template, req = req)
